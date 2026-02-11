@@ -1,7 +1,9 @@
 import requests
 import json
 
-def api_rooster():
+def api_rooster(search_query):
+    
+    
     api_url = "https://api.rooster.jobs/jobSearch/jobs/search"
     
     headers = {
@@ -11,7 +13,7 @@ def api_rooster():
     }
     
     payload = {
-       "query": ["software engineer intern"],
+       "query": [search_query],
         "limit": 50,
         "page": 1,
         "filters": {}
@@ -70,10 +72,11 @@ def save_to_json(jobs, filename="internships_2026.json"):
     print(f"Successfully saved {len(jobs)} jobs to {filename}")
 
 
+
     
-if __name__ == "__main__":
-    results = api_rooster()
-    save_to_json(results)
-    print(f"✅ Found {len(results)} internships from 2026:")
-    for res in results:
-        print(f" - {res['title']} at {res['company']} ({res['location']}) ({res['link']}) (Posted: {res.get('created_at', 'N/A')})")
+# if __name__ == "__main__":
+#     results = api_rooster()
+#     save_to_json(results)
+#     print(f"✅ Found {len(results)} internships from 2026:")
+#     for res in results:
+#         print(f" - {res['title']} at {res['company']} ({res['location']}) ({res['link']}) (Posted: {res.get('created_at', 'N/A')})")
