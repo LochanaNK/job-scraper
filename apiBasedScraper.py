@@ -1,7 +1,7 @@
 import requests
 import json
 
-def api_job_scraper():
+def api_rooster():
     api_url = "https://api.rooster.jobs/jobSearch/jobs/search"
     
     headers = {
@@ -43,7 +43,7 @@ def api_job_scraper():
                         "company": job.get('company_name'),
                         "location": job.get('location'),
                         "created_at": created_at,
-                        "link": f"https://rooster.jobs/job/{job.get('id')}"
+                        "link": f"https://rooster.jobs/jobs/{job.get('id')}"
                     })
             return internships_2026
         return []
@@ -51,6 +51,8 @@ def api_job_scraper():
     except Exception as e:
         print(f"Error occurred: {e}")
         return []
+
+
 
 
 
@@ -70,7 +72,7 @@ def save_to_json(jobs, filename="internships_2026.json"):
 
     
 if __name__ == "__main__":
-    results = api_job_scraper()
+    results = api_rooster()
     save_to_json(results)
     print(f"✅ Found {len(results)} internships from 2026:")
     for res in results:

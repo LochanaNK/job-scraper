@@ -10,7 +10,7 @@ async def scrape_rooster(search_query):
         page = await context.new_page()
         
         
-        url = f"https://rooster.jobs/?query={search_query}&limit=20&page=1"
+        url = f"https://rooster.jobs/?query={search_query}&limit=50&page=1"
         print(f"Navigating to {url}")
         
         try:
@@ -27,12 +27,19 @@ async def scrape_rooster(search_query):
             for job in jobs:
                 title = "n/a"
                 company = "n/a"
-                link = "n/a"
+                full_link = "n/a"
+                raw_date = "n/a"
                 
                 try:
                     title_el = await job.query_selector("h5.job-title-h5")
                     company_el = await job.query_selector("button.ant-btn")
                     link_el = await job.query_selector("a.job-title")
+                    
+                    try:
+                        date_el = await job.locator("div.posted-on-label span").inner_text()
+                        raw_date = date_el.split("on")[-1].strip()
+                    except Exception as e:
+                        raw_date = "n/a"
                     
                     if title_el:
                         title = await title_el.inner_text()
@@ -43,11 +50,16 @@ async def scrape_rooster(search_query):
                         if raw_link:
                             full_link = f"https://rooster.jobs{raw_link}" if raw_link.startswith("/") else raw_link
                     
-                    if title != "n/a" and "intern" in title.lower():
+                    
+                    is_intern = "intern" in title.lower()
+                    is_2026 = "26" in raw_date or "2026" in raw_date
+                    
+                    if title != "n/a" and is_intern and is_2026:
                         results.append({
                         "title": title.strip(),
                         "company": company.strip(),
-                        "link": full_link
+                        "link": full_link,
+                        "date_posted": raw_date
                     })
                 except Exception as e:
                     print(f"Error extracting job details: {e}")
@@ -66,6 +78,6 @@ if __name__ == "__main__":
     jobs_found = asyncio.run(scrape_rooster(search_query))
     
     for job in jobs_found:
-        print(f"Title: {job['title']}, Company: {job['company']}, Link: {job['link']}")
+        print(f"Title: {job['title']}, Company: {job['company']}, Link: {job['link']}, Date Posted: {job['date_posted']}")
         
     
