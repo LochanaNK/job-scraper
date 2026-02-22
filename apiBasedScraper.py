@@ -71,12 +71,3 @@ def save_to_json(jobs, filename="internships_2026.json"):
     
     print(f"Successfully saved {len(jobs)} jobs to {filename}")
 
-
-
-    
-# if __name__ == "__main__":
-#     results = api_rooster()
-#     save_to_json(results)
-#     print(f"✅ Found {len(results)} internships from 2026:")
-#     for res in results:
-#         print(f" - {res['title']} at {res['company']} ({res['location']}) ({res['link']}) (Posted: {res.get('created_at', 'N/A')})")
