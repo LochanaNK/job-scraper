@@ -44,7 +44,7 @@ def api_rooster(search_query):
                 created_at = job.get('updated_at', '')
                 job_title = job.get('title','').lower()
                 
-                if ("2026" in created_at or "26" in created_at) and "intern" in job_title:
+                if ("2026" in created_at or "26" in created_at) and search_query in job_title:
                     internships_2026.append({
                         "title": job.get('title'),
                         "company": job.get('company_name'),
