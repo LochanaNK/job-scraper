@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from apiBasedScraper import api_rooster
+from apiBasedScraper import api_rooster, api_jobhunder
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from importlib.metadata import version
@@ -16,6 +16,7 @@ server.add_middleware(
 @server.get('/scrape')
 async def run_scraper(query: str):
     results = api_rooster(query)
+    results.extend(api_jobhunder(query))
     return {"results" : results}
 
 
