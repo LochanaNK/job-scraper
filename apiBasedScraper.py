@@ -51,7 +51,7 @@ def api_rooster(search_query):
                         "location": job.get('location'),
                         "created_at": created_at,
                         "link": f"https://rooster.jobs/jobs/{job.get('id')}",
-                        "source": "rooster"
+                        "source": "Rooster"
                     })
             return internships_2026
         return []
@@ -96,7 +96,7 @@ def api_jobhunder(search_query):
                             "location": "Sri Lanka",
                             "created_at": date_tag.get_text(strip=True) if date_tag else "Recent",
                             "link": link_tag['href'],
-                            "source": "jobhunder"
+                            "source": "Jobhunder"
                         })
         return jobs
     except Exception as e:

@@ -15,9 +15,19 @@ server.add_middleware(
 
 @server.get('/scrape')
 async def run_scraper(query: str):
-    results = api_rooster(query)
-    results.extend(api_jobhunder(query))
-    return {"results" : results}
+    all_results = []
+    
+    try:
+        all_results.extend(api_rooster(query))
+    except Exception as e:
+        print(f"Error in rooster scraper: {e}")
+        
+    try:
+        all_results.extend(api_jobhunder(query))
+    except Exception as e:
+        print(f"Error in jobhunder scraper: {e}")
+
+    return {"results": all_results}
 
 
 print(f"FastAPI Version: {version('fastapi')}")
