@@ -19,15 +19,18 @@ async def run_scraper(query: str):
     
     try:
         all_results.extend(api_rooster(query))
+        all_results.sort(key=lambda x: x.get('match_score', 0), reverse=True)
     except Exception as e:
         print(f"Error in rooster scraper: {e}")
         
     try:
         all_results.extend(api_jobhunder(query))
+        all_results.sort(key=lambda x: x.get('match_score', 0), reverse=True)
     except Exception as e:
         print(f"Error in jobhunder scraper: {e}")
 
     return {"results": all_results}
+
 
 
 print(f"FastAPI Version: {version('fastapi')}")

@@ -1,5 +1,6 @@
 import requests
 import json
+from keywordMatching import calculate_match_score
 from bs4 import BeautifulSoup
 
 
@@ -8,7 +9,7 @@ from bs4 import BeautifulSoup
 
 def api_rooster(search_query):
     
-    
+    keywords = search_query.lower().split()
     api_url = "https://api.rooster.jobs/jobSearch/jobs/search"
     
     headers = {
@@ -44,14 +45,17 @@ def api_rooster(search_query):
                 created_at = job.get('updated_at', '')
                 job_title = job.get('title','').lower()
                 
-                if ("2026" in created_at or "26" in created_at) and search_query in job_title:
+                score = calculate_match_score(search_query, job_title)
+                
+                if "26" in created_at and score >=0.5:
                     internships_2026.append({
                         "title": job.get('title'),
                         "company": job.get('company_name'),
                         "location": job.get('location'),
                         "created_at": created_at,
                         "link": f"https://rooster.jobs/jobs/{job.get('id')}",
-                        "source": "Rooster"
+                        "source": "Rooster",
+                        "match_score": score
                     })
             return internships_2026
         return []
@@ -66,6 +70,8 @@ def api_rooster(search_query):
 def api_jobhunder(search_query):
     formatted_query = search_query.strip().replace(' ', '+')
     api_url = f"https://www.jobhunder.com/search?q={formatted_query}"
+    
+    keywords = search_query.lower().split();
     
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/122.0.0.0 Safari/537.36"
@@ -87,32 +93,21 @@ def api_jobhunder(search_query):
             
             date_tag = article.find('span', class_='post-date')
 
+            score = calculate_match_score(search_query, title_h2.text if title_h2 else "")
+
             if link_tag:
-                if "2026" in date_tag.text or "26" in date_tag.text:
-                    if "intern" in title_h2.text.lower():
-                        jobs.append({
-                            "title": link_tag.get_text(strip=True),
-                            "company": company_tag.get_text(strip=True) if company_tag else "Jobhunder",
-                            "location": "Sri Lanka",
-                            "created_at": date_tag.get_text(strip=True) if date_tag else "Recent",
-                            "link": link_tag['href'],
-                            "source": "Jobhunder"
-                        })
+                if "2026" in date_tag.text and score >=0.5:
+                    jobs.append({
+                        "title": link_tag.get_text(strip=True),
+                        "company": company_tag.get_text(strip=True) if company_tag else "Jobhunder",
+                        "location": "Sri Lanka",
+                        "created_at": date_tag.get_text(strip=True) if date_tag else "Recent",
+                        "link": link_tag['href'],
+                        "source": "Jobhunder",
+                        "match_score": score
+                    })
         return jobs
     except Exception as e:
         print(f"Jobhunder Scraping Error: {e}")
         return []
-
-def save_to_json(jobs, filename="internships_2026.json"):
-    if not jobs:
-        print("No jobs found to save.")
-        return
-
-    # 'w' mode opens the file for writing (overwrites existing)
-    with open(filename, 'w', encoding='utf-8') as f:
-        # indent=4 makes the file human-readable
-        # ensure_ascii=False keeps special characters (like symbols or emojis) intact
-        json.dump(jobs, f, indent=4, ensure_ascii=False)
-    
-    print(f"Successfully saved {len(jobs)} jobs to {filename}")
 
