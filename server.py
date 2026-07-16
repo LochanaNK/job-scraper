@@ -39,7 +39,6 @@ print(f"Uvicorn Version: {version('uvicorn')}")
 print(f"Requests Version: {version('requests')}")
 
 
-
 if __name__ == "__main__":
     uvicorn.run(server, host='0.0.0.0', port=8000)
     
